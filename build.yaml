@@ -1,9 +1,9 @@
 name: 'Historic Intros'
 guid: 'A03D1027-7034-4474-8A12-17C4DC62B17A'
-version: '2.2.0.0'
+version: '1.0.0.0'
 targetAbi: '10.8.0.0'
 framework: 'net6.0'
-owner: 'BrianCArnold'
+owner: 'morris-frank'
 overview: 'Display flashy intros before movies and other videos'
 description: >
   Select a flashy pre-roll from local storage to run before any
