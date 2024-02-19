@@ -34,7 +34,7 @@ public class IntroProvider : IIntroProvider
         }
         catch (Exception e)
         {
-            logger.LogError(e, "Error retrieving intros");
+            logger.LogInformation(e, "Error retrieving intros");
             return Task.FromResult(Enumerable.Empty<IntroInfo>());
         }
     }
@@ -101,13 +101,12 @@ public class IntroProvider : IIntroProvider
             }
         }
 
-
-        logger.LogInformation("Found {0} intros for {1}", intros.Count, item.Name);
         logger.LogInformation("Intros: {0}", string.Join(", ", intros));
 
         return intros.Select(x => new IntroInfo
         {
             Path = x,
+            ItemId = Guid.NewGuid(),
         });
     }
 
