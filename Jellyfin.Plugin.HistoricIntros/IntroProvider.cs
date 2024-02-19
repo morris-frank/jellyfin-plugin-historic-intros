@@ -76,6 +76,7 @@ public class IntroProvider : IIntroProvider
         if (Directory.Exists(trailerYearPath))
         {
             var trailerFiles = Directory.GetFiles(trailerYearPath);
+            trailerFiles = trailerFiles.Where(x => !Path.GetFileName(x).StartsWith("._")).ToArray();
             if (trailerFiles.Length > 0)
             {
                 var NTrailers = Math.Min(numberOfTrailers, trailerFiles.Length);
@@ -90,6 +91,7 @@ public class IntroProvider : IIntroProvider
 
         // Load intros
         var introFiles = Directory.GetFiles(prerollsPath);
+        introFiles = introFiles.Where(x => !Path.GetFileName(x).StartsWith("._")).ToArray();
         if (introFiles.Length > 0)
         {
             var prerolls = introFiles.OrderBy(x => x);
