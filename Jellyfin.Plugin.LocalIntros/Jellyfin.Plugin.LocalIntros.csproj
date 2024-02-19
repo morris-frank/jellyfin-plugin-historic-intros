@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <RootNamespace>Jellyfin.Plugin.LocalIntros</RootNamespace>
+    <RootNamespace>Jellyfin.Plugin.HistoricIntros</RootNamespace>
     <AssemblyVersion>2.2.0.100</AssemblyVersion>
     <FileVersion>2.2.0.100</FileVersion>
   </PropertyGroup>
