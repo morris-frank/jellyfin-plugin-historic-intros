@@ -27,6 +27,12 @@
                         <input id="NumberOfTrailers" is="emby-input" type="number" placeholder="2" />
                         <div class="fieldDescription">How many trailers to play</div>
                     </div>
+                    <div class="inputContainer">
+                        <button id="loadVideosBtn" is="emby-button" type="button"
+                            class="raised button-submit block emby-button">
+                            <span>Load Videos</span>
+                        </button>
+                    </div>
                     <div>
                         <button is="emby-button" type="submit" class="raised button-submit block emby-button">
                             <span>Save</span>
@@ -75,6 +81,16 @@
                 $('#NumberOfTrailers').change(ev => {
                     localIntroConfig.NumberOfTrailers = $('#NumberOfTrailers').val();
                 });
+
+                $('#loadVideosBtn').click(ev => {
+                    saveChanges().then(() => loadVideos());
+                });
+
+                var loadVideos = () => {
+                    let url = ApiClient.getUrl('LocalIntros/LoadIntros');
+                    let data = {};
+                    ApiClient.ajax({ type: 'POST', url, data, contentType: 'application/json' }).then(() => { loadPage() }).catch(ev => alert(ev));
+                }
 
 
                 document.querySelector('#configForm').addEventListener('submit', function (event) {
