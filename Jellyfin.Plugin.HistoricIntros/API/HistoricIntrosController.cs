@@ -101,10 +101,10 @@ public class HistoricIntrosController : ControllerBase
                     ProductionYear = int.Parse(year),
                     ProviderIds = new Dictionary<string, string>
                     {
-                        {"intros.trailers.video", ""}
+                        {"intros.trailers.video", path}
                     },
                 };
-                logger.LogDebug("Creating trailer {0}", item.Name);
+                logger.LogDebug("Creating trailer {0} ({1})", item.Name, item.ProductionYear);
                 HistoricIntrosPlugin.LibraryManager.CreateItem(item, null);
             }
         }
@@ -125,7 +125,7 @@ public class HistoricIntrosController : ControllerBase
                 Path = path,
                 ProviderIds = new Dictionary<string, string>
                 {
-                    {"intros.prerolls.video", ""}
+                    {"intros.prerolls.video", path}
                 },
             };
             logger.LogDebug("Creating preroll {0}", item.Name);
