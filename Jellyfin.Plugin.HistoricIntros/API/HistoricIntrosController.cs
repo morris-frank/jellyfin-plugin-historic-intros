@@ -39,29 +39,6 @@ public class HistoricIntrosController : ControllerBase
     {
         logger.LogDebug("Loading Intros");
         PopulateIntroLibrary();
-
-        foreach (var item in HistoricIntrosPlugin.LibraryManager.GetItemsResult(new InternalItemsQuery
-        {
-            HasAnyProviderId = new Dictionary<string, string>
-            {
-                {"intros.prerolls.video", ""}
-            }
-        }).Items)
-        {
-            logger.LogDebug("Found preroll {0}", item.Name);
-        }
-
-        foreach (var item in HistoricIntrosPlugin.LibraryManager.GetItemsResult(new InternalItemsQuery
-        {
-            HasAnyProviderId = new Dictionary<string, string>
-            {
-                {"intros.trailers.video", ""}
-            }
-        }).Items)
-        {
-            logger.LogDebug("Found trailer {0} ({1})", item.Name, item.ProductionYear);
-        }
-
         return Ok();
     }
 
@@ -72,18 +49,17 @@ public class HistoricIntrosController : ControllerBase
     private void DeleteByProviderId(string providerId)
     {
         logger.LogDebug("Deleting intros with providerId {0}", providerId);
-        var intros = HistoricIntrosPlugin.LibraryManager.GetItemsResult(new InternalItemsQuery
+        HistoricIntrosPlugin.LibraryManager.GetItemsResult(new InternalItemsQuery
         {
             HasAnyProviderId = new Dictionary<string, string>
             {
                 {providerId, ""}
             }
-        }).Items.ToList();
-        foreach (var intro in intros)
+        }).Items.ToList().ForEach(x =>
         {
-            logger.LogDebug("Deleting {0}", intro.Path);
-            HistoricIntrosPlugin.LibraryManager.DeleteItem(intro, new DeleteOptions());
-        }
+            logger.LogDebug("Deleting {0}", x);
+            HistoricIntrosPlugin.LibraryManager.DeleteItem(x, new DeleteOptions());
+        })
     }
 
     private void PopulateIntroLibrary()

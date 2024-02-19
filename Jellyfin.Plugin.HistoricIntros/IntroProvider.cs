@@ -51,80 +51,40 @@ public class IntroProvider : IIntroProvider
 
     private IEnumerable<IntroInfo> LoadLocalFileIntros(BaseItem item)
     {
-        if (
-            HistoricIntrosPlugin.Instance.Configuration.PrerollsPath == string.Empty ||
-            HistoricIntrosPlugin.Instance.Configuration.TrailersPath == string.Empty ||
-            !Directory.Exists(trailersPath) ||
-            !Directory.Exists(prerollsPath) ||
-            HistoricIntrosPlugin.Instance.Configuration.NumberOfTrailers == 0
-        )
-        {
-            throw new Exception("Invalid configuration");
-        }
-
         if (item.GetBaseItemKind() != Data.Enums.BaseItemKind.Movie)
         {
             throw new Exception("Pre-rolls only for movies");
         }
 
+        var year = item.ProductionYear ?? DateTime.Now.Year;
 
-        var intros = new List<string>();
-
-        // Load trailers
-        var premiereYear = item.PremiereDate?.Year ?? DateTime.Now.Year;
-        var trailerYearPath = Path.Combine(trailersPath, premiereYear.ToString());
-        if (Directory.Exists(trailerYearPath))
+        var trailers = HistoricIntrosPlugin.LibraryManager.GetItemsResult(new InternalItemsQuery
         {
-            var trailerFiles = Directory.GetFiles(trailerYearPath);
-            trailerFiles = trailerFiles.Where(x => !Path.GetFileName(x).StartsWith("._")).ToArray();
-            if (trailerFiles.Length > 0)
+            Years = new[] { year },
+            HasAnyProviderId = new Dictionary<string, string>
             {
-                var NTrailers = Math.Min(numberOfTrailers, trailerFiles.Length);
-                var trailers = trailerFiles.OrderBy(x => _random.Next()).Take(NTrailers);
-                foreach (var trailer in trailers)
-                {
-                    intros.Add(trailer);
-                }
-
+                {"intros.trailers.video", ""}
             }
-        }
+        }).Items.ToList();
+        logger.LogDebug("Found {0} trailers for {1}", trailers.Count, item.Name);
 
-        // Load intros
-        var introFiles = Directory.GetFiles(prerollsPath);
-        introFiles = introFiles.Where(x => !Path.GetFileName(x).StartsWith("._")).ToArray();
-        if (introFiles.Length > 0)
+        var prerolls = HistoricIntrosPlugin.LibraryManager.GetItemsResult(new InternalItemsQuery
         {
-            var prerolls = introFiles.OrderBy(x => x);
-            foreach (var preroll in prerolls)
+            HasAnyProviderId = new Dictionary<string, string>
             {
-                intros.Add(preroll);
+                {"intros.prerolls.video", ""}
             }
-        }
+        }).Items.ToList();
+        logger.LogDebug("Found {0} prerolls", prerolls.Count);
 
-        logger.LogInformation("Intros: {0}", string.Join(", ", intros));
-
-        var videos = intros.Select(x => new Video
-        {
-            Id = Guid.NewGuid(),
-            Path = x,
-            ProviderIds = new Dictionary<string, string>
-                    {
-                        {"prerolls.video", x}
-                    },
-        }).ToList();
-        foreach (var video in videos)
-        {
-            HistoricIntrosPlugin.LibraryManager.CreateItem(video, null);
-        }
-
-        logger.LogInformation("Intro guid: {0}", string.Join(", ", videos.Select(x => x.Id.ToString())));
-
-
-        return videos.Select(x => new IntroInfo
+        return trailers.Concat(prerolls).Select(x => new IntroInfo
         {
             Path = x.Path,
             ItemId = item.Id,
         });
+
+        //         var NTrailers = Math.Min(numberOfTrailers, trailerFiles.Length);
+        //         var trailers = trailerFiles.OrderBy(x => _random.Next()).Take(NTrailers);
     }
 
 }
