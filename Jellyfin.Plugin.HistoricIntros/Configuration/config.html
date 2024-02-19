@@ -87,7 +87,7 @@
                 });
 
                 var loadVideos = () => {
-                    let url = ApiClient.getUrl('LocalIntros/LoadIntros');
+                    let url = ApiClient.getUrl('HistoricIntros/LoadIntros');
                     let data = {};
                     ApiClient.ajax({ type: 'POST', url, data, contentType: 'application/json' }).then(() => { loadPage() }).catch(ev => alert(ev));
                 }
