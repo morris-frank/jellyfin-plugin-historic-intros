@@ -75,7 +75,7 @@ public class IntroProvider : IIntroProvider
         var trailerYearPath = Path.Combine(trailersPath, premiereYear.ToString());
         if (Directory.Exists(trailerYearPath))
         {
-            var trailerFiles = Directory.GetFiles(trailerYearPath, "*.*", SearchOption.AllDirectories);
+            var trailerFiles = Directory.GetFiles(trailerYearPath);
             if (trailerFiles.Length > 0)
             {
                 var NTrailers = Math.Min(numberOfTrailers, trailerFiles.Length);
@@ -89,7 +89,7 @@ public class IntroProvider : IIntroProvider
         }
 
         // Load intros
-        var introFiles = Directory.GetFiles(prerollsPath, "*.*", SearchOption.AllDirectories);
+        var introFiles = Directory.GetFiles(prerollsPath);
         if (introFiles.Length > 0)
         {
             var prerolls = introFiles.OrderBy(x => x);
@@ -100,9 +100,12 @@ public class IntroProvider : IIntroProvider
         }
 
 
+        logger.LogInformation("Found {0} intros for {1}", intros.Count, item.Name);
+        logger.LogInformation("Intros: {0}", string.Join(", ", intros));
+
         return intros.Select(x => new IntroInfo
         {
-            Path = x
+            Path = x,
         });
     }
 
