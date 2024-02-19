@@ -103,10 +103,27 @@ public class IntroProvider : IIntroProvider
 
         logger.LogInformation("Intros: {0}", string.Join(", ", intros));
 
-        return intros.Select(x => new IntroInfo
+        var videos = intros.Select(x => new Video
         {
+            Id = Guid.NewGuid(),
             Path = x,
-            ItemId = Guid.NewGuid(),
+            ProviderIds = new Dictionary<string, string>
+                    {
+                        {"prerolls.video", x}
+                    },
+        }).ToList();
+        foreach (var video in videos)
+        {
+            HistoricIntrosPlugin.LibraryManager.CreateItem(video, null);
+        }
+
+        logger.LogInformation("Intro guid: {0}", string.Join(", ", videos.Select(x => x.Id.ToString())));
+
+
+        return videos.Select(x => new IntroInfo
+        {
+            Path = x.Path,
+            ItemId = item.Id,
         });
     }
 
