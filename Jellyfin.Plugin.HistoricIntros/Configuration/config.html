@@ -30,7 +30,7 @@
                     <div class="inputContainer">
                         <button id="loadVideosBtn" is="emby-button" type="button"
                             class="raised button-submit block emby-button">
-                            <span>Load Videos</span>
+                            <span>Reload trailers & pre-rolls</span>
                         </button>
                     </div>
                     <div>
@@ -91,7 +91,6 @@
                     let data = {};
                     ApiClient.ajax({ type: 'POST', url, data, contentType: 'application/json' }).then(() => { loadPage() }).catch(ev => alert(ev));
                 }
-
 
                 document.querySelector('#configForm').addEventListener('submit', function (event) {
                     Dashboard.showLoadingMsg();

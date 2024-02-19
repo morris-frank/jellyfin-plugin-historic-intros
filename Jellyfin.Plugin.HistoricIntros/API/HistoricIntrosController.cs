@@ -42,7 +42,6 @@ public class HistoricIntrosController : ControllerBase
 
         var inLibrary = HistoricIntrosPlugin.LibraryManager.GetItemsResult(new InternalItemsQuery
         {
-            Tags = new[] { "intros.video" },
             HasAnyProviderId = new Dictionary<string, string>
             {
                 {"intros.trailers.video", ""},
@@ -60,17 +59,26 @@ public class HistoricIntrosController : ControllerBase
     private static string prerollsPath => HistoricIntrosPlugin.Instance.Configuration.PrerollsPath;
     private static int numberOfTrailers => HistoricIntrosPlugin.Instance.Configuration.NumberOfTrailers;
 
-    private void PopulateIntroLibrary()
+    private void DeleteByProviderId(string providerId)
     {
-        var inLibrary = HistoricIntrosPlugin.LibraryManager.GetItemsResult(new InternalItemsQuery
+        var intros = HistoricIntrosPlugin.LibraryManager.GetItemsResult(new InternalItemsQuery
         {
-            Tags = new[] { "intros.video" },
             HasAnyProviderId = new Dictionary<string, string>
             {
-                {"intros.trailers.video", ""},
-                {"intros.prerolls.video", ""}
+                {providerId, ""}
             }
-        }).Items.ToDictionary(x => x.Path, x => x);
+        }).Items.ToList();
+        foreach (var intro in intros)
+        {
+            logger.LogInformation("Deleting {0}", intro.Path);
+            HistoricIntrosPlugin.LibraryManager.DeleteItem(intro, new DeleteOptions());
+        }
+    }
+
+    private void PopulateIntroLibrary()
+    {
+        DeleteByProviderId("intros.trailers.video");
+        DeleteByProviderId("intros.prerolls.video");
 
         var trailerFolders = Directory.GetDirectories(trailersPath);
         foreach (var folder in trailerFolders)
@@ -79,7 +87,8 @@ public class HistoricIntrosController : ControllerBase
             var trailers = Directory.GetFiles(folder);
             foreach (var path in trailers)
             {
-                if (inLibrary.ContainsKey(path) || path.StartsWith("."))
+                var name = Path.GetFileNameWithoutExtension(path);
+                if (name.StartsWith("."))
                 {
                     continue;
                 }
@@ -87,7 +96,7 @@ public class HistoricIntrosController : ControllerBase
                 var item = new Video
                 {
                     Id = Guid.NewGuid(),
-                    Name = Path.GetFileNameWithoutExtension(path),
+                    Name = name,
                     Path = path,
                     ProductionYear = int.Parse(year),
                     ProviderIds = new Dictionary<string, string>
@@ -103,7 +112,8 @@ public class HistoricIntrosController : ControllerBase
         var prerolls = Directory.GetFiles(prerollsPath, "*.*", SearchOption.AllDirectories);
         foreach (var path in prerolls)
         {
-            if (inLibrary.ContainsKey(path) || path.StartsWith("."))
+            var name = Path.GetFileNameWithoutExtension(path);
+            if (name.StartsWith("."))
             {
                 continue;
             }
@@ -111,7 +121,7 @@ public class HistoricIntrosController : ControllerBase
             var item = new Video
             {
                 Id = Guid.NewGuid(),
-                Name = Path.GetFileNameWithoutExtension(path),
+                Name = name,
                 Path = path,
                 ProviderIds = new Dictionary<string, string>
                 {
