@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8" />
-    <title>Historic Trailers and Pre-rolls</title>
+    <title>Historical Trailers and Pre-rolls</title>
 </head>
 
 <body>
@@ -44,7 +44,7 @@
         <script type="text/javascript">
             (() => {
                 var plugin = {
-                    guid: 'A03D1027-7034-4474-8A12-17C4DC62B17A'
+                    guid: 'B962549B-30A0-4C72-90CD-24F9E401FD76'
                 };
 
                 var localIntroConfig = {
@@ -87,7 +87,7 @@
                 });
 
                 var loadVideos = () => {
-                    let url = ApiClient.getUrl('HistoricIntros/LoadIntros');
+                    let url = ApiClient.getUrl('HistoricalIntros/LoadIntros');
                     let data = {};
                     ApiClient.ajax({ type: 'POST', url, data, contentType: 'application/json' }).then(() => { loadPage() }).catch(ev => alert(ev));
                 }

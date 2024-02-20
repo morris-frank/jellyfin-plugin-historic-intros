@@ -8,28 +8,28 @@ using MediaBrowser.Controller.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Jellyfin.Plugin.HistoricIntros.Configuration;
+using Jellyfin.Plugin.HistoricalIntros.Configuration;
 using MediaBrowser.Controller.Library;
 using Microsoft.Extensions.Logging;
 
-namespace Jellyfin.Plugin.HistoricIntros;
+namespace Jellyfin.Plugin.HistoricalIntros;
 
 
 [ApiController]
 [Authorize(Policy = "RequiresElevation")]
 [Route("[controller]")]
 [Produces(MediaTypeNames.Application.Json)]
-public class HistoricIntrosController : ControllerBase
+public class HistoricalIntrosController : ControllerBase
 {
-    private readonly ILogger<HistoricIntrosController> logger;
+    private readonly ILogger<HistoricalIntrosController> logger;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="LdapController"/> class.
     /// </summary>
     /// <param name="appHost">The application host to get the LDAP Authentication Provider from.</param>
-    public HistoricIntrosController(IApplicationHost appHost, ILoggerFactory loggerFactory)
+    public HistoricalIntrosController(IApplicationHost appHost, ILoggerFactory loggerFactory)
     {
-        this.logger = loggerFactory.CreateLogger<HistoricIntrosController>();
+        this.logger = loggerFactory.CreateLogger<HistoricalIntrosController>();
     }
 
     [HttpPost("LoadIntros")]
@@ -42,14 +42,14 @@ public class HistoricIntrosController : ControllerBase
         return Ok();
     }
 
-    private static string trailersPath => HistoricIntrosPlugin.Instance.Configuration.TrailersPath;
-    private static string prerollsPath => HistoricIntrosPlugin.Instance.Configuration.PrerollsPath;
-    private static int numberOfTrailers => HistoricIntrosPlugin.Instance.Configuration.NumberOfTrailers;
+    private static string trailersPath => HistoricalIntrosPlugin.Instance.Configuration.TrailersPath;
+    private static string prerollsPath => HistoricalIntrosPlugin.Instance.Configuration.PrerollsPath;
+    private static int numberOfTrailers => HistoricalIntrosPlugin.Instance.Configuration.NumberOfTrailers;
 
     private void DeleteByProviderId(string providerId)
     {
         logger.LogDebug("Deleting intros with providerId {0}", providerId);
-        HistoricIntrosPlugin.LibraryManager.GetItemsResult(new InternalItemsQuery
+        HistoricalIntrosPlugin.LibraryManager.GetItemsResult(new InternalItemsQuery
         {
             HasAnyProviderId = new Dictionary<string, string>
             {
@@ -58,14 +58,14 @@ public class HistoricIntrosController : ControllerBase
         }).Items.ToList().ForEach(x =>
         {
             logger.LogDebug("Deleting {0}", x);
-            HistoricIntrosPlugin.LibraryManager.DeleteItem(x, new DeleteOptions());
-        })
+            HistoricalIntrosPlugin.LibraryManager.DeleteItem(x, new DeleteOptions());
+        });
     }
 
     private void PopulateIntroLibrary()
     {
-        DeleteByProviderId("intros.trailers.video");
-        DeleteByProviderId("intros.prerolls.video");
+        DeleteByProviderId("trailers.prerolls.video");
+        DeleteByProviderId("prerolls.prerolls.video");
 
         var trailerFolders = Directory.GetDirectories(trailersPath);
         foreach (var folder in trailerFolders)
@@ -88,11 +88,11 @@ public class HistoricIntrosController : ControllerBase
                     ProductionYear = int.Parse(year),
                     ProviderIds = new Dictionary<string, string>
                     {
-                        {"intros.trailers.video", path}
+                        {"trailers.prerolls.video", path}
                     },
                 };
                 logger.LogDebug("Creating trailer {0} ({1})", item.Name, item.ProductionYear);
-                HistoricIntrosPlugin.LibraryManager.CreateItem(item, null);
+                HistoricalIntrosPlugin.LibraryManager.CreateItem(item, null);
             }
         }
 
@@ -112,12 +112,13 @@ public class HistoricIntrosController : ControllerBase
                 Path = path,
                 ProviderIds = new Dictionary<string, string>
                 {
-                    {"intros.prerolls.video", path}
+                    {"prerolls.prerolls.video", path}
                 },
             };
             logger.LogDebug("Creating preroll {0}", item.Name);
-            HistoricIntrosPlugin.LibraryManager.CreateItem(item, null);
+            HistoricalIntrosPlugin.LibraryManager.CreateItem(item, null);
         }
+        HistoricalIntrosPlugin.Instance.SaveConfiguration();
 
 
     }

@@ -1,7 +1,7 @@
 [
   {
-    "guid": "A03D1027-7034-4474-8A12-17C4DC62B17A",
-    "name": "Historic Intros",
+    "guid": "B962549B-30A0-4C72-90CD-24F9E401FD76",
+    "name": "Historical Intros",
     "overview": "Play a trailer from the past before the main feature.",
     "description": "Play a trailer from the past before the main feature.",
     "owner": "morris-frank",
@@ -9,9 +9,9 @@
     "versions": [
       {
         "version": "1.0.0.1",
-        "changelog": "Initial Historic Intros release",
+        "changelog": "Initial Historical Intros release",
         "targetAbi": "10.8.0.0",
-        "sourceUrl": "https://github.com/morris-frank/jellyfin-plugin-historic-intros/releases/download/v1.0.0.1/jellyfin-plugin-historic-intros-v1.0.0.1.zip",
+        "sourceUrl": "https://github.com/morris-frank/jellyfin-plugin-historical-intros/releases/download/v1.0.0.1/jellyfin-plugin-historical-intros-v1.0.0.1.zip",
         "checksum": "76a47b8aff5e2f8d7ef5e6a1fe49df94",
         "timestamp": "2024-02-20T00:00:00Z"
       }

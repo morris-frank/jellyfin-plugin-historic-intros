@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using Jellyfin.Plugin.HistoricIntros.Configuration;
+using Jellyfin.Plugin.HistoricalIntros.Configuration;
 using Jellyfin.Data.Entities;
 using MediaBrowser.Controller.Entities;
 using MediaBrowser.Controller.Library;
@@ -14,7 +14,7 @@ using MediaBrowser.Controller.Entities.Movies;
 using Microsoft.Extensions.Logging;
 
 
-namespace Jellyfin.Plugin.HistoricIntros;
+namespace Jellyfin.Plugin.HistoricalIntros;
 public class IntroProvider : IIntroProvider
 {
     private readonly ILogger<IntroProvider> logger;
@@ -24,7 +24,7 @@ public class IntroProvider : IIntroProvider
         logger = loggerFactory.CreateLogger<IntroProvider>();
     }
 
-    public string Name { get; } = "Historic Intros";
+    public string Name { get; } = "Intros";
 
     public Task<IEnumerable<IntroInfo>> GetIntros(BaseItem item, User user)
     {
@@ -52,23 +52,23 @@ public class IntroProvider : IIntroProvider
 
         var year = item.ProductionYear ?? DateTime.Now.Year;
 
-        var allTrailers = HistoricIntrosPlugin.LibraryManager.GetItemsResult(new InternalItemsQuery
+        var allTrailers = HistoricalIntrosPlugin.LibraryManager.GetItemsResult(new InternalItemsQuery
         {
             Years = new[] { year },
             HasAnyProviderId = new Dictionary<string, string>
             {
-                {"intros.trailers.video", ""}
+                {"trailers.prerolls.video", ""}
             }
         }).Items.ToList();
-        var NTrailers = Math.Min(HistoricIntrosPlugin.Instance.Configuration.NumberOfTrailers, allTrailers.Count);
+        var NTrailers = Math.Min(HistoricalIntrosPlugin.Instance.Configuration.NumberOfTrailers, allTrailers.Count);
         var trailers = allTrailers.OrderBy(x => _random.Next()).Take(NTrailers).ToList();
         logger.LogDebug("Found {0} trailers for {2} using {1}", allTrailers.Count, trailers.Count, item.Name);
 
-        var prerolls = HistoricIntrosPlugin.LibraryManager.GetItemsResult(new InternalItemsQuery
+        var prerolls = HistoricalIntrosPlugin.LibraryManager.GetItemsResult(new InternalItemsQuery
         {
             HasAnyProviderId = new Dictionary<string, string>
             {
-                {"intros.prerolls.video", ""}
+                {"prerolls.prerolls.video", ""}
             }
         }).Items.ToList();
         logger.LogDebug("Found {0} prerolls", prerolls.Count);
@@ -78,7 +78,6 @@ public class IntroProvider : IIntroProvider
             Path = x.Path,
             ItemId = item.Id,
         });
-
     }
 
 }
