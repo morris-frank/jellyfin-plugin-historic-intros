@@ -24,7 +24,7 @@ public class IntroProvider : IIntroProvider
         logger = loggerFactory.CreateLogger<IntroProvider>();
     }
 
-    public string Name { get; } = "Intros";
+    public string Name { get; } = "Historic Intros";
 
     public Task<IEnumerable<IntroInfo>> GetIntros(BaseItem item, User user)
     {
@@ -43,12 +43,6 @@ public class IntroProvider : IIntroProvider
 
     private readonly Random _random = new Random();
 
-    private static string prerollsPath => HistoricIntrosPlugin.Instance.Configuration.PrerollsPath;
-
-    private static string trailersPath => HistoricIntrosPlugin.Instance.Configuration.TrailersPath;
-
-    private static int numberOfTrailers => HistoricIntrosPlugin.Instance.Configuration.NumberOfTrailers;
-
     private IEnumerable<IntroInfo> LoadLocalFileIntros(BaseItem item)
     {
         if (item.GetBaseItemKind() != Data.Enums.BaseItemKind.Movie)
@@ -58,7 +52,7 @@ public class IntroProvider : IIntroProvider
 
         var year = item.ProductionYear ?? DateTime.Now.Year;
 
-        var trailers = HistoricIntrosPlugin.LibraryManager.GetItemsResult(new InternalItemsQuery
+        var allTrailers = HistoricIntrosPlugin.LibraryManager.GetItemsResult(new InternalItemsQuery
         {
             Years = new[] { year },
             HasAnyProviderId = new Dictionary<string, string>
@@ -66,7 +60,9 @@ public class IntroProvider : IIntroProvider
                 {"intros.trailers.video", ""}
             }
         }).Items.ToList();
-        logger.LogDebug("Found {0} trailers for {1}", trailers.Count, item.Name);
+        var NTrailers = Math.Min(HistoricIntrosPlugin.Instance.Configuration.NumberOfTrailers, allTrailers.Count);
+        var trailers = allTrailers.OrderBy(x => _random.Next()).Take(NTrailers).ToList();
+        logger.LogDebug("Found {0} trailers for {2} using {1}", allTrailers.Count, trailers.Count, item.Name);
 
         var prerolls = HistoricIntrosPlugin.LibraryManager.GetItemsResult(new InternalItemsQuery
         {
@@ -83,8 +79,6 @@ public class IntroProvider : IIntroProvider
             ItemId = item.Id,
         });
 
-        //         var NTrailers = Math.Min(numberOfTrailers, trailerFiles.Length);
-        //         var trailers = trailerFiles.OrderBy(x => _random.Next()).Take(NTrailers);
     }
 
 }
