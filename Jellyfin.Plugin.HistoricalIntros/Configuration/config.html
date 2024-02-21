@@ -13,19 +13,24 @@
             <div class="content-primary">
                 <form id="configForm">
                     <div class="inputContainer">
+                        <label class="inputLabel inputLabelUnfocused" for="PreTrailersPath">Source of Pre-Trailers</label>
+                        <input id="PreTrailersPath" is="emby-input" placeholder="/media/intros" />
+                        <div class="fieldDescription"> Folder with the prerolls played in order before the trailers</div>
+                    </div>
+                    <div class="inputContainer">
                         <label class="inputLabel inputLabelUnfocused" for="TrailersPath">Source of Trailers</label>
                         <input id="TrailersPath" is="emby-input" placeholder="/media/intros" />
                         <div class="fieldDescription">Folder with the yearly folders</div>
                     </div>
                     <div class="inputContainer">
-                        <label class="inputLabel inputLabelUnfocused" for="PrerollsPath">Source of the intros</label>
-                        <input id="PrerollsPath" is="emby-input" placeholder="/media/intros" />
-                        <div class="fieldDescription">Folder with the other intros</div>
-                    </div>
-                    <div class="inputContainer">
                         <label class="inputLabel inputLabelUnfocused" for="NumberOfTrailers">Number of trailers</label>
                         <input id="NumberOfTrailers" is="emby-input" type="number" placeholder="2" />
                         <div class="fieldDescription">How many trailers to play</div>
+                    </div>
+                    <div class="inputContainer">
+                        <label class="inputLabel inputLabelUnfocused" for="PrerollsPath">Source of the post-trailer prerolls</label>
+                        <input id="PrerollsPath" is="emby-input" placeholder="/media/intros" />
+                        <div class="fieldDescription">Folder with the prerolls played in order after the trailers</div>
                     </div>
                     <div class="inputContainer">
                         <button id="loadVideosBtn" is="emby-button" type="button"
@@ -50,6 +55,7 @@
                 var localIntroConfig = {
                     TrailersPath: "",
                     PrerollsPath: "",
+                    PreTrailersPath: "",
                     NumberOfTrailers: 2
                 };
 
@@ -61,6 +67,7 @@
                         localIntroConfig = config;
                         $('#TrailersPath').val(config.TrailersPath);
                         $('#PrerollsPath').val(config.PrerollsPath);
+                        $('#PreTrailersPath').val(config.PreTrailersPath);
                         $('#NumberOfTrailers').val(config.NumberOfTrailers);
                         Dashboard.hideLoadingMsg();
                     });
@@ -72,6 +79,10 @@
 
                 $('#TrailersPath').change(ev => {
                     localIntroConfig.TrailersPath = $('#TrailersPath').val();
+                });
+
+                $('#PreTrailersPath').change(ev => {
+                    localIntroConfig.PreTrailersPath = $('#PreTrailersPath').val();
                 });
 
                 $('#PrerollsPath').change(ev => {

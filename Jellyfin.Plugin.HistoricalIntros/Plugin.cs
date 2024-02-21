@@ -15,7 +15,7 @@ namespace Jellyfin.Plugin.HistoricalIntros
 
         public override Guid Id => Guid.Parse("B962549B-30A0-4C72-90CD-24F9E401FD76");
 
-        public const int DefaultResolution = 1080;
+        public const int DefaultResolution = 720;
 
         public static HistoricalIntrosPlugin Instance { get; private set; }
 

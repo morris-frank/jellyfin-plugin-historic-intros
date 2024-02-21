@@ -10,6 +10,8 @@ public class IntroPluginConfiguration : BasePluginConfiguration
 
     public string PrerollsPath { get; set; } = string.Empty;
 
+    public string PreTrailersPath { get; set; } = string.Empty;
+
     public int NumberOfTrailers { get; set; } = 1;
 
 }

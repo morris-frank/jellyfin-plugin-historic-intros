@@ -47,11 +47,20 @@ public class IntroProvider : IIntroProvider
     {
         if (item.GetBaseItemKind() != Data.Enums.BaseItemKind.Movie)
         {
-            throw new Exception("Pre-rolls only for movies");
+            return Enumerable.Empty<IntroInfo>();
         }
 
-        var year = item.ProductionYear ?? DateTime.Now.Year;
+        var pretrailers = HistoricalIntrosPlugin.LibraryManager.GetItemsResult(new InternalItemsQuery
+        {
+            HasAnyProviderId = new Dictionary<string, string>
+            {
+                {"pretrailers.prerolls.video", ""}
+            }
+        }).Items.ToList();
+        pretrailers = pretrailers.OrderBy(x => x.Name).ToList();
+        logger.LogDebug("Found {0} pretrailers", pretrailers.Count);
 
+        var year = item.ProductionYear ?? DateTime.Now.Year;
         var allTrailers = HistoricalIntrosPlugin.LibraryManager.GetItemsResult(new InternalItemsQuery
         {
             Years = new[] { year },
@@ -71,12 +80,13 @@ public class IntroProvider : IIntroProvider
                 {"prerolls.prerolls.video", ""}
             }
         }).Items.ToList();
+        prerolls = prerolls.OrderBy(x => x.Name).ToList();
         logger.LogDebug("Found {0} prerolls", prerolls.Count);
 
-        return trailers.Concat(prerolls).Select(x => new IntroInfo
+        return pretrailers.Concat(trailers).Concat(prerolls).Select(x => new IntroInfo
         {
             Path = x.Path,
-            ItemId = item.Id,
+            ItemId = x.Id,
         });
     }
 

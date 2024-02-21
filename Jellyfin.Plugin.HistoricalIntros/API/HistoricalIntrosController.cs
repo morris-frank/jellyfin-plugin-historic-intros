@@ -44,6 +44,7 @@ public class HistoricalIntrosController : ControllerBase
 
     private static string trailersPath => HistoricalIntrosPlugin.Instance.Configuration.TrailersPath;
     private static string prerollsPath => HistoricalIntrosPlugin.Instance.Configuration.PrerollsPath;
+    private static string preTrailersPath => HistoricalIntrosPlugin.Instance.Configuration.PreTrailersPath;
     private static int numberOfTrailers => HistoricalIntrosPlugin.Instance.Configuration.NumberOfTrailers;
 
     private void DeleteByProviderId(string providerId)
@@ -64,6 +65,7 @@ public class HistoricalIntrosController : ControllerBase
 
     private void PopulateIntroLibrary()
     {
+        DeleteByProviderId("pretrailers.prerolls.video");
         DeleteByProviderId("trailers.prerolls.video");
         DeleteByProviderId("prerolls.prerolls.video");
 
@@ -120,7 +122,28 @@ public class HistoricalIntrosController : ControllerBase
         }
         HistoricalIntrosPlugin.Instance.SaveConfiguration();
 
+        var preTrailers = Directory.GetFiles(preTrailersPath, "*.*", SearchOption.AllDirectories);
+        foreach (var path in preTrailers)
+        {
+            var name = Path.GetFileNameWithoutExtension(path);
+            if (name.StartsWith("."))
+            {
+                continue;
+            }
 
+            var item = new Video
+            {
+                Id = Guid.NewGuid(),
+                Name = name,
+                Path = path,
+                ProviderIds = new Dictionary<string, string>
+                {
+                    {"pretrailers.prerolls.video", path}
+                },
+            };
+            logger.LogDebug("Creating pretrailer {0}", item.Name);
+            HistoricalIntrosPlugin.LibraryManager.CreateItem(item, null);
+        }
     }
 
 }
