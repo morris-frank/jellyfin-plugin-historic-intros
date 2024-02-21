@@ -70,6 +70,7 @@ public class IntroProvider : IIntroProvider
             }
         }).Items.ToList();
         var NTrailers = Math.Min(HistoricalIntrosPlugin.Instance.Configuration.NumberOfTrailers, allTrailers.Count);
+        allTrailers = allTrailers.Where(x => !x.Name.Contains(item.Name, StringComparison.OrdinalIgnoreCase)).ToList();
         var trailers = allTrailers.OrderBy(x => _random.Next()).Take(NTrailers).ToList();
         logger.LogDebug("Found {0} trailers for {2} using {1}", allTrailers.Count, trailers.Count, item.Name);
 
